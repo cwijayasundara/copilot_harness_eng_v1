@@ -55,135 +55,70 @@ mkdir -p specs/brd specs/stories specs/design/mockups specs/design/amendments sp
 
 ## Step 5: Generate CLAUDE.md
 
-Write CLAUDE.md tailored to chosen stack. Include:
-- Project description (from step 1)
-- Commands section (backend test, lint, format, typecheck — from manifest)
-- Frontend commands (from manifest)
-- Full-stack Docker command
-- Architecture rules (layered, one-way deps)
-- Code style (from manifest tools)
-- Testing philosophy
-- SDLC pipeline commands table (all /commands)
-- Agent roles table
-- Quality principles (6)
-- Git workflow (branch naming, conventional commits)
+Write CLAUDE.md tailored to chosen stack. This is a slim table of contents (~60 lines) that
+directs agents to the right reference files via progressive disclosure. Do not inline full rules
+here — agents discover details by reading the referenced skill files.
 
 ### CLAUDE.md Template
 
 ```markdown
-# {PROJECT_NAME}
+# {project-name}
 
-{PROJECT_DESCRIPTION}
+{description from user input}
 
-## Commands
+## Quick Reference
 
-### Backend
-- **Test:** `cd backend && {TEST_RUNNER} -v`
-- **Lint:** `cd backend && {LINTER} .`
-- **Format:** `cd backend && {LINTER} format .`
-- **Type-check:** `cd backend && {TYPECHECKER}`
-
-### Frontend
-- **Test:** `cd frontend && {FRONTEND_TEST_RUNNER} run`
-- **Lint:** `cd frontend && {FRONTEND_LINTER} .`
-- **Type-check:** `cd frontend && {FRONTEND_TYPECHECKER}`
-- **Build:** `cd frontend && npm run build`
-
-### Full Stack
-- **Start all services:** `docker compose up -d --build`
-- **Stop all services:** `docker compose down`
-- **View logs:** `docker compose logs -f`
+**Backend:** `cd backend && uv run pytest -x -q` | `uv run ruff check --fix .` | `uv run mypy src/`
+**Frontend:** `cd frontend && npm test` | `npm run lint` | `npm run typecheck`
+**Full stack:** Start backend + frontend (see init.sh)
 
 ## Architecture
 
-This project follows a layered, one-way dependency architecture:
+Strict layered architecture: Types → Config → Repository → Service → API → UI.
+One-way dependencies only. See `.claude/architecture.md` for full rules.
 
-```
-UI → API → Services → Repositories → DB
-```
+## Where to Find Things
 
-Rules:
-- Dependencies flow in one direction only (no circular imports)
-- Each layer may only import from the layer directly below it
-- Business logic lives in Services, not in API handlers or Repositories
-- Database models are separate from API schemas
+| What | Where |
+|------|-------|
+| Architecture rules | `.claude/architecture.md` |
+| Quality principles | `.claude/skills/code-gen/SKILL.md` |
+| Testing patterns | `.claude/skills/testing/SKILL.md` |
+| Evaluation rubric | `.claude/skills/evaluation/SKILL.md` |
+| Sprint contract format | `.claude/skills/evaluation/references/contract-schema.json` |
+| Playwright patterns | `.claude/skills/evaluation/references/playwright-patterns.md` |
+| Human control knobs | `.claude/program.md` |
+| Session recovery | `claude-progress.txt` |
+| Feature tracking | `features.json` |
+| Learned rules | `.claude/state/learned-rules.md` |
+
+## Pipeline Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/brd` | Socratic interview → BRD |
+| `/spec` | BRD → stories + features.json |
+| `/design` | Architecture + schemas + mockups |
+| `/build` | Full 8-phase pipeline |
+| `/auto` | Autonomous ratcheting loop |
+| `/implement` | Code gen with agent teams |
+| `/evaluate` | Run app, verify contract |
+| `/review` | Evaluator + security review |
+| `/test` | Test plan + Playwright E2E |
+| `/deploy` | Docker Compose + init.sh |
 
 ## Code Style
 
-### Backend ({BACKEND_LANG})
-- Linter: {LINTER} (auto-fix with `{LINTER} --fix`)
-- Type checker: {TYPECHECKER} (strict mode)
-- Formatter: {LINTER} format
-- All public functions must have type annotations
-- Docstrings required for modules, classes, and public functions
+- TDD mandatory: test first, then implement
+- 100% meaningful coverage target, 80% floor
+- Functions < 50 lines, files < 300 lines
+- Static typing everywhere (zero `any`)
+- See `.claude/skills/code-gen/SKILL.md` for full rules
 
-### Frontend (TypeScript)
-- Linter: {FRONTEND_LINTER}
-- Type checker: {FRONTEND_TYPECHECKER} (strict mode)
-- No `any` types — use `unknown` with guards if necessary
-- Components are functional with hooks; no class components
+## Git
 
-## Testing Philosophy
-
-- Write tests first when fixing bugs (regression tests)
-- Unit tests for all business logic (Services layer)
-- Integration tests for API endpoints
-- E2E tests for critical user journeys via Playwright
-- Coverage threshold: 80% (enforced by CI)
-- Tests live adjacent to the code they test
-
-## SDLC Pipeline Commands
-
-| Command       | Description                                      |
-|---------------|--------------------------------------------------|
-| `/brd`        | Generate Business Requirements Document          |
-| `/spec`       | Convert BRD into user stories                    |
-| `/design`     | Create UI/UX mockups and architecture diagrams   |
-| `/build`      | Implement a feature group end-to-end             |
-| `/test`       | Run full test suite and report coverage          |
-| `/review`     | Security, performance, and code quality review   |
-| `/evaluate`   | Score the build against the design rubric        |
-| `/deploy`     | Package and deploy via Docker Compose            |
-| `/auto`       | Run the full pipeline autonomously               |
-| `/scaffold`   | Initialize a new project with the harness        |
-
-## Agent Roles
-
-| Agent            | Responsibility                                   |
-|------------------|--------------------------------------------------|
-| Planner          | Breaks BRD into sprint contracts and stories     |
-| Generator        | Implements features from story specs             |
-| Evaluator        | Scores UI against design rubric (Karpathy loop)  |
-| Design Critic    | Reviews design quality and suggests improvements |
-| UI Designer      | Creates mockups and design tokens                |
-| Test Engineer    | Writes and runs automated tests                  |
-| Security Reviewer| Audits for vulnerabilities and secrets           |
-
-## Quality Principles
-
-1. **Correctness first** — code must pass all tests before merging
-2. **Type safety** — no implicit any; strict mode always on
-3. **Layered architecture** — enforce one-way dependency boundaries
-4. **Test coverage** — maintain ≥ 80% coverage at all times
-5. **Security by default** — no secrets in code; input validation everywhere
-6. **Iterative improvement** — use the Karpathy ratchet to improve incrementally
-
-## Git Workflow
-
-### Branch Naming
-- Features: `feat/{story-id}-short-description`
-- Fixes: `fix/{issue-id}-short-description`
-- Chores: `chore/short-description`
-
-### Conventional Commits
-```
-feat: add user authentication endpoint
-fix: resolve race condition in order processing
-chore: update dependencies to latest versions
-test: add coverage for payment service
-docs: update API documentation
-refactor: extract validation logic to service layer
-```
+Branch: `<type>/<description>` (e.g., `feat/user-auth`)
+Commits: conventional format (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`)
 ```
 
 ## Step 6: Generate design.md
