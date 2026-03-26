@@ -57,4 +57,4 @@ A GAN-inspired harness implementing Karpathy's autoresearch ratcheting with:
 
 ## Design Spec
 
-See `docs/superpowers/specs/2026-03-26-claude-harness-engine-v1-design.md`
+See `.claude/docs/design-spec.md` and `.claude/docs/implementation-plan.md`
