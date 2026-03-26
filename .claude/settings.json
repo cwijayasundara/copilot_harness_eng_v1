@@ -37,42 +37,42 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/scope-directory.sh",
+            "command": "node .claude/hooks/scope-directory.js",
             "timeout": 5000
           },
           {
             "type": "command",
-            "command": ".claude/hooks/protect-env.sh",
+            "command": "node .claude/hooks/protect-env.js",
             "timeout": 5000
           },
           {
             "type": "command",
-            "command": ".claude/hooks/detect-secrets.sh",
+            "command": "node .claude/hooks/detect-secrets.js",
             "timeout": 5000
           },
           {
             "type": "command",
-            "command": ".claude/hooks/lint-on-save.sh",
+            "command": "node .claude/hooks/lint-on-save.js",
             "timeout": 15000
           },
           {
             "type": "command",
-            "command": ".claude/hooks/typecheck.sh",
+            "command": "node .claude/hooks/typecheck.js",
             "timeout": 30000
           },
           {
             "type": "command",
-            "command": ".claude/hooks/check-architecture.sh",
+            "command": "node .claude/hooks/check-architecture.js",
             "timeout": 5000
           },
           {
             "type": "command",
-            "command": ".claude/hooks/check-function-length.sh",
+            "command": "node .claude/hooks/check-function-length.js",
             "timeout": 5000
           },
           {
             "type": "command",
-            "command": ".claude/hooks/check-file-length.sh",
+            "command": "node .claude/hooks/check-file-length.js",
             "timeout": 5000
           }
         ]
@@ -82,12 +82,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/pre-commit-gate.sh",
+            "command": "node .claude/hooks/pre-commit-gate.js",
             "timeout": 30000
           },
           {
             "type": "command",
-            "command": ".claude/hooks/sprint-contract-gate.sh",
+            "command": "node .claude/hooks/sprint-contract-gate.js",
             "timeout": 5000
           }
         ]
@@ -98,7 +98,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/task-completed.sh",
+            "command": "node .claude/hooks/task-completed.js",
             "timeout": 5000
           }
         ]
@@ -109,7 +109,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/teammate-idle-check.sh",
+            "command": "node .claude/hooks/teammate-idle-check.js",
             "timeout": 5000
           }
         ]
