@@ -73,6 +73,105 @@ Create the following state files before entering the autonomous loop:
 
 Run `/auto --mode {mode}` to enter the autonomous build loop. The `/auto` skill handles all remaining execution: sprint contracts, agent teams, ratchet gates, self-healing, and session chaining.
 
+### Phase 9 — Generate README.md
+
+After `/auto` completes (all groups done or stopping criteria met), generate a `README.md` for the built application. This is the developer-facing guide for running, understanding, and contributing to the generated project.
+
+Read the following to build the README:
+- `specs/brd/brd.md` — what the app does (project description)
+- `specs/design/architecture.md` — system architecture
+- `specs/design/api-contracts.md` or `api-contracts.schema.json` — API surface
+- `specs/design/component-map.md` — module structure
+- `project-manifest.json` — tech stack, verification mode
+- `init.sh` — setup steps
+- `docker-compose.yml` (if exists) — services
+- `.env.example` (if exists) — required environment variables
+
+**README must include these sections:**
+
+```markdown
+# {Project Name}
+
+{1-2 sentence description from BRD}
+
+## Architecture
+
+{System diagram: layers, services, data flow. Use ASCII art or bullet list.
+Show: frontend -> API -> service -> repository -> database.
+Note external APIs if any.}
+
+## Tech Stack
+
+| Component | Technology |
+|-----------|-----------|
+| Backend | {from manifest} |
+| Frontend | {from manifest} |
+| Database | {from manifest} |
+| Testing | {from manifest} |
+
+## Prerequisites
+
+- {language version}
+- Docker + Docker Compose
+- {any external API keys needed — reference .env.example}
+
+## Quick Start
+
+```bash
+# 1. Clone and enter
+git clone <repo-url> && cd {project-name}
+
+# 2. Copy environment config
+cp .env.example .env
+# Edit .env with your API keys
+
+# 3. Start everything
+bash init.sh
+# OR: docker compose up -d
+
+# 4. Verify
+curl http://localhost:{port}/health
+```
+
+## API Endpoints
+
+{Table of all endpoints from api-contracts: method, path, description, auth required}
+
+## Project Structure
+
+```
+{Directory tree showing key files and their responsibilities.
+ Use component-map.md as source. Show backend/, frontend/, tests/}
+```
+
+## Running Tests
+
+```bash
+# Backend
+cd backend && uv run pytest --cov=src -v
+
+# Frontend
+cd frontend && npm test
+```
+
+## Environment Variables
+
+{Table from .env.example: variable name, description, required/optional, example value}
+
+## Development
+
+{Brief notes on: how to add a new endpoint, how to run linters,
+ how to run the app locally without Docker}
+```
+
+**Rules:**
+- README describes the GENERATED APP, not the harness. Do not mention Claude, the harness, `/auto`, or agents.
+- All commands must be tested — run them mentally against the generated code to verify they work.
+- API endpoint table must match the actual routes in the code, not just the spec.
+- Environment variables table must match `.env.example` exactly.
+
+Commit the README: `git add README.md && git commit -m "docs: add README with architecture, setup, and API reference"`
+
 ---
 
 ## Mode Reference

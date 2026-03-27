@@ -478,7 +478,33 @@ OR logic with priority (check in order):
    Learned rules: {count}
    Total iterations: {count}
    ```
-   Then run `docker compose down -v` and exit.
+   Then:
+   1. Run `docker compose down -v`
+   2. Generate `README.md` for the built application (see below)
+   3. Commit: `git add README.md && git commit -m "docs: add README with architecture, setup, and API reference"`
+   4. Exit
+
+### README Generation (on completion)
+
+After the build completes, generate a `README.md` that describes the GENERATED APP (not the harness).
+
+Read these files for content:
+- `specs/brd/brd.md` — project description
+- `specs/design/architecture.md` — system architecture
+- `specs/design/api-contracts.md` or `api-contracts.schema.json` — API surface
+- `specs/design/component-map.md` — module structure
+- `project-manifest.json` — tech stack
+- `init.sh` — setup steps
+- `docker-compose.yml` (if exists) — services
+- `.env.example` (if exists) — required environment variables
+
+**Required sections:** Project description, Architecture (diagram/layers), Tech Stack (table), Prerequisites, Quick Start (copy-paste commands), API Endpoints (table), Project Structure (directory tree), Running Tests, Environment Variables (table from .env.example), Development notes.
+
+**Rules:**
+- Do NOT mention Claude, the harness, `/auto`, agents, or the GAN loop. This is a developer README for the app.
+- All commands must work against the generated code.
+- API table must match actual routes, not just the spec.
+- Environment variables must match `.env.example` exactly.
 
 ---
 
