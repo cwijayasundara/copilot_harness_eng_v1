@@ -100,6 +100,8 @@ class OrderNotFoundError extends DomainError {
 2. **100% meaningful coverage** — every branch, every error path. At 100%, any uncovered line is an immediate signal of missing verification. The ratchet gate BLOCKS below 80%.
 3. **Only mock external boundaries:** databases, third-party APIs, file I/O, clocks.
 4. **Never mock business logic** — if you mock a service to test another service, you are hiding bugs.
+5. **Isolate tests from .env files:** When testing settings/config that uses pydantic-settings or dotenv, pass `_env_file=None` (pydantic) or mock `dotenv.load_dotenv` to prevent the developer's `.env` from leaking into tests. Tests must be self-contained — they must pass regardless of what's in the local `.env`.
+6. **Use async-compatible connection strings:** When using async frameworks (SQLAlchemy async, asyncpg), defaults must use the async driver scheme (e.g., `postgresql+asyncpg://` not `postgresql://`). The sync scheme will fail at runtime with a cryptic driver error.
 5. **Realistic test data** — use domain-representative values (real-looking emails, valid UUIDs, plausible amounts). Never `"foo"`, `123`, or `"test"`.
 6. Test names describe behavior: `"returns 404 when order does not exist"`, not `"test order"`.
 
@@ -394,3 +396,5 @@ Rules:
 - **Missing logging at service boundaries** — Every incoming request and outgoing call must be logged with timing and status.
 - **Raw dict API responses** — Always serialize through a response model. Raw dicts bypass validation and leak internal structure.
 - **Magic numbers** — All thresholds, limits, timeouts, and configuration belong in `config.yml`.
+- **.env leaking into tests** — Tests that validate "missing config raises error" will pass in CI but fail locally if `.env` has the value. Always pass `_env_file=None` in pydantic-settings tests.
+- **Sync DB driver in async app** — `postgresql://` uses psycopg2 (sync). Async SQLAlchemy needs `postgresql+asyncpg://`. Always match the driver scheme to the engine type.
