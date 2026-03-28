@@ -119,8 +119,20 @@ Preset mappings:
 
 ## Step 3: Copy Scaffold Files
 
-Copy from plugin source ($CLAUDE_PLUGIN_DIR or detect from this file's location):
+First, locate the plugin source directory. The harness plugin files live alongside this command file.
+To find the source, search for the plugin marker file:
+
 ```bash
+# Find the harness plugin root by locating its plugin.json
+PLUGIN_SOURCE=$(find ~/Documents ~/claude-harness-engine ~ -maxdepth 5 -path "*claude_harness_eng_v1/.claude" -o -path "*claude-harness-engine/.claude" 2>/dev/null | head -1)
+```
+
+If the above doesn't find it, ask the user: "Where is the claude-harness-engine plugin cloned? I need the path to copy scaffold files."
+
+Once you have the source path, create `.claude/` in the target project and copy:
+
+```bash
+mkdir -p .claude
 cp -r $PLUGIN_SOURCE/agents/ .claude/agents/
 cp -r $PLUGIN_SOURCE/skills/ .claude/skills/
 cp -r $PLUGIN_SOURCE/hooks/ .claude/hooks/
@@ -130,6 +142,8 @@ cp $PLUGIN_SOURCE/architecture.md .claude/architecture.md
 cp $PLUGIN_SOURCE/program.md .claude/program.md
 cp $PLUGIN_SOURCE/settings.json .claude/settings.json
 ```
+
+**Important:** You MUST actually run these copy commands via Bash. Do NOT skip this step or try to generate the files from memory. The source files contain hooks, agent definitions, and skill instructions that must be copied exactly.
 
 ### Add Official Plugins to settings.json (based on question 5)
 
