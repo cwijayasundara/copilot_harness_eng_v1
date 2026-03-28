@@ -22,7 +22,7 @@ A Claude Code plugin scaffold that implements best practices from [Anthropic](ht
 
 ```bash
 # Clone the harness
-git clone <repo-url> ~/claude-harness-engine
+git clone https://github.com/cwijayasundara/claude_harness_eng_v1.git ~/claude-harness-engine
 
 # Start Claude Code with the plugin loaded
 claude --plugin-dir ~/claude-harness-engine/.claude
@@ -30,7 +30,7 @@ claude --plugin-dir ~/claude-harness-engine/.claude
 
 ### Option 2: Permanent (user settings)
 
-Add to `~/.claude/settings.json`:
+Add to `~/.claude/settings.json` (merge with existing settings):
 
 ```json
 {
@@ -48,21 +48,40 @@ Add to `~/.claude/settings.json`:
 
 Then just run `claude` from any directory — the harness skills are always available.
 
+## Plugin Structure
+
+The plugin is loaded from the `.claude/` directory. Claude Code auto-discovers components by convention:
+
+```
+.claude/
+  .claude-plugin/
+    plugin.json          ← Manifest (name, version, description only)
+  skills/                ← Auto-discovered skill directories
+  agents/                ← Auto-discovered agent definitions
+  commands/              ← Auto-discovered commands
+  hooks/                 ← Hook scripts
+  settings.json          ← Permissions and hook config
+```
+
+**Important:** `plugin.json` should only contain metadata (`name`, `version`, `description`, `author`). Do NOT add explicit `skills`/`agents`/`commands` path fields — Claude Code discovers these automatically.
+
 ## Quick Start
 
 ```bash
 # 1. Navigate to (or create) your project directory
 mkdir my-app && cd my-app
 
-# 2. Scaffold the project
-/scaffold
+# 2. Scaffold the project (use plugin namespace)
+/claude-harness-engine:scaffold
 # Choose your stack, project type, and verification mode
 
 # 3. Run the full pipeline
-/build
+/claude-harness-engine:build
 # Phases 1-3 (BRD, spec, design) require your approval
 # Phases 4-8 run autonomously via /auto
 ```
+
+> **Note:** When loaded as a plugin, all commands are namespaced: `/claude-harness-engine:<command>`. When working inside a scaffolded project (which has its own `.claude/skills/`), you can use the short form: `/scaffold`, `/build`, etc.
 
 ## How It Works
 
@@ -76,21 +95,23 @@ See `design.md` for full architecture reference (system diagram, agent roles, ho
 
 | Command | Purpose |
 |---------|---------|
-| `/scaffold` | Initialize project with harness |
-| `/brd` | Socratic interview -> BRD |
-| `/spec` | BRD -> stories + dependency graph + features.json |
-| `/design` | Architecture + schemas + mockups |
-| `/build` | Full 8-phase pipeline |
-| `/auto` | Autonomous ratcheting loop |
-| `/implement` | Code generation with agent teams |
-| `/evaluate` | Run app, verify sprint contract |
-| `/review` | Evaluator + security review |
-| `/test` | Test plan + Playwright E2E generation |
-| `/deploy` | Docker Compose + init.sh |
-| `/fix-issue` | GitHub issue workflow |
-| `/refactor` | Quality-driven refactoring |
-| `/improve` | Feature enhancement |
-| `/lint-drift` | Entropy scanner for pattern drift |
+| `scaffold` | Initialize project with harness |
+| `brd` | Socratic interview -> BRD |
+| `spec` | BRD -> stories + dependency graph + features.json |
+| `design` | Architecture + schemas + mockups |
+| `build` | Full 8-phase pipeline |
+| `auto` | Autonomous ratcheting loop |
+| `implement` | Code generation with agent teams |
+| `evaluate` | Run app, verify sprint contract |
+| `review` | Evaluator + security review |
+| `test` | Test plan + Playwright E2E generation |
+| `deploy` | Docker Compose + init.sh |
+| `fix-issue` | GitHub issue workflow |
+| `refactor` | Quality-driven refactoring |
+| `improve` | Feature enhancement |
+| `lint-drift` | Entropy scanner for pattern drift |
+
+> Prefix with `/claude-harness-engine:` when using as a plugin (e.g., `/claude-harness-engine:brd`). Use `/command` shorthand when inside a scaffolded project.
 
 ## Requirements
 
