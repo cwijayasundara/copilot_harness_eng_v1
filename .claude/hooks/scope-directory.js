@@ -4,21 +4,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const input = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
-const filePath = input.tool_input && input.tool_input.file_path;
-
-if (!filePath) {
-  process.exit(0);
-}
-
-// Resolve the absolute path of the file being written
-const resolvedFilePath = path.resolve(filePath);
-
-// Allow writes to /tmp
-if (resolvedFilePath.startsWith('/tmp')) {
-  process.exit(0);
-}
-
 // Walk up from this script's location to find the directory that contains .claude/
 function findProjectDir(startDir) {
   let current = startDir;
@@ -36,20 +21,39 @@ function findProjectDir(startDir) {
   }
 }
 
-const scriptDir = path.dirname(path.resolve(__filename));
-const projectDir = findProjectDir(scriptDir);
+try {
+  const input = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
+  const filePath = input.tool_input && input.tool_input.file_path;
 
-if (!projectDir) {
-  process.stderr.write('BLOCKED: Could not determine project directory (no .claude/ found in ancestors)\n');
-  process.exit(2);
-}
+  if (!filePath) {
+    process.exit(0);
+  }
 
-const resolvedProject = path.resolve(projectDir);
+  // Resolve the absolute path of the file being written
+  const resolvedFilePath = path.resolve(filePath);
 
-// Ensure the file path is within the project directory
-if (!resolvedFilePath.startsWith(resolvedProject + path.sep) && resolvedFilePath !== resolvedProject) {
-  process.stderr.write(`BLOCKED: Write outside project directory: ${resolvedFilePath}\nFix: Move the file to a location within the project directory or use .claude/ for scaffold files.\n`);
-  process.exit(2);
+  // Allow writes to /tmp
+  if (resolvedFilePath.startsWith('/tmp')) {
+    process.exit(0);
+  }
+
+  const scriptDir = path.dirname(path.resolve(__filename));
+  const projectDir = findProjectDir(scriptDir);
+
+  if (!projectDir) {
+    process.stderr.write('BLOCKED: Could not determine project directory (no .claude/ found in ancestors)\n');
+    process.exit(2);
+  }
+
+  const resolvedProject = path.resolve(projectDir);
+
+  // Ensure the file path is within the project directory
+  if (!resolvedFilePath.startsWith(resolvedProject + path.sep) && resolvedFilePath !== resolvedProject) {
+    process.stderr.write(`BLOCKED: Write outside project directory: ${resolvedFilePath}\nFix: Move the file to a location within the project directory or use .claude/ for scaffold files.\n`);
+    process.exit(2);
+  }
+} catch (err) {
+  process.stderr.write(`scope-directory.js error: ${err.message}\n`);
 }
 
 process.exit(0);

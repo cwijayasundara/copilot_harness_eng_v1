@@ -4,27 +4,31 @@
 const fs = require('fs');
 const path = require('path');
 
-const input = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
-const filePath = input.tool_input && input.tool_input.file_path;
+try {
+  const input = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
+  const filePath = input.tool_input && input.tool_input.file_path;
 
-if (!filePath) {
-  process.exit(0);
-}
+  if (!filePath) {
+    process.exit(0);
+  }
 
-const filename = path.basename(filePath);
+  const filename = path.basename(filePath);
 
-// Match .env, .env.local, .env.production, etc. but NOT .env.example
-if (filename === '.env.example') {
-  process.exit(0);
-}
+  // Match .env, .env.local, .env.production, etc. but NOT .env.example
+  if (filename === '.env.example') {
+    process.exit(0);
+  }
 
-const envPattern = /^\.env(\..+)?$/;
+  const envPattern = /^\.env(\..+)?$/;
 
-if (envPattern.test(filename)) {
-  process.stderr.write(
-    `BLOCKED: Cannot modify ${filename} — environment files contain real secrets. Edit manually.\nFix: Edit .env.example instead for documentation, or edit .env manually outside Claude.\n`
-  );
-  process.exit(2);
+  if (envPattern.test(filename)) {
+    process.stderr.write(
+      `BLOCKED: Cannot modify ${filename} — environment files contain real secrets. Edit manually.\nFix: Edit .env.example instead for documentation, or edit .env manually outside Claude.\n`
+    );
+    process.exit(2);
+  }
+} catch (err) {
+  process.stderr.write(`protect-env.js error: ${err.message}\n`);
 }
 
 process.exit(0);
