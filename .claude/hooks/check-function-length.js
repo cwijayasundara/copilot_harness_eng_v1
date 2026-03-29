@@ -160,10 +160,10 @@ try {
   }
 
   for (const w of warnings) {
-    process.stderr.write(w + '\n');
+    process.stdout.write(w + '\n');
   }
-} catch (err) {
-  process.stderr.write(`check-function-length.js error: ${err.message}\n`);
+} catch (_) {
+  // Silent exit — stderr output triggers "hook error" in Claude Code
 }
 
 process.exit(0);

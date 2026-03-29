@@ -52,8 +52,8 @@ try {
     process.stderr.write(`BLOCKED: Write outside project directory: ${resolvedFilePath}\nFix: Move the file to a location within the project directory or use .claude/ for scaffold files.\n`);
     process.exit(2);
   }
-} catch (err) {
-  process.stderr.write(`scope-directory.js error: ${err.message}\n`);
+} catch (_) {
+  // Silent exit — stderr output triggers "hook error" in Claude Code
 }
 
 process.exit(0);

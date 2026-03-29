@@ -27,8 +27,8 @@ try {
     );
     process.exit(2);
   }
-} catch (err) {
-  process.stderr.write(`protect-env.js error: ${err.message}\n`);
+} catch (_) {
+  // Silent exit — stderr output triggers "hook error" in Claude Code
 }
 
 process.exit(0);

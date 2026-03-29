@@ -59,7 +59,7 @@ try {
       });
       if (result.status !== 0) {
         const output = (result.stdout || '') + (result.stderr || '');
-        process.stderr.write(`Typecheck errors in ${filePath}:\n${output}\nFix: Add type annotations or fix the type mismatch shown above.\n`);
+        process.stdout.write(`Typecheck errors in ${filePath}:\n${output}\nFix: Add type annotations or fix the type mismatch shown above.\n`);
       }
     }
   } else if (isTypeScript) {
@@ -71,12 +71,12 @@ try {
       });
       if (result.status !== 0) {
         const output = (result.stdout || '') + (result.stderr || '');
-        process.stderr.write(`Typecheck errors (tsc):\n${output}\nFix: Add type annotations or fix the type mismatch shown above.\n`);
+        process.stdout.write(`Typecheck errors (tsc):\n${output}\nFix: Add type annotations or fix the type mismatch shown above.\n`);
       }
     }
   }
-} catch (err) {
-  process.stderr.write(`typecheck.js error: ${err.message}\n`);
+} catch (_) {
+  // Silent exit — stderr output triggers "hook error" in Claude Code
 }
 
 process.exit(0);

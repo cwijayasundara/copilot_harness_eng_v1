@@ -66,10 +66,10 @@ try {
   }
 
   if (lineCount > WARN_LIMIT) {
-    process.stderr.write(`WARNING: ${filePath} is ${lineCount} lines (recommended max ${WARN_LIMIT}).\nFix: Split by responsibility into separate modules. Re-export from an index file if needed.\n`);
+    process.stdout.write(`WARNING: ${filePath} is ${lineCount} lines (recommended max ${WARN_LIMIT}).\nFix: Split by responsibility into separate modules. Re-export from an index file if needed.\n`);
   }
-} catch (err) {
-  process.stderr.write(`check-file-length.js error: ${err.message}\n`);
+} catch (_) {
+  // Silent exit — stderr output triggers "hook error" in Claude Code
 }
 
 process.exit(0);

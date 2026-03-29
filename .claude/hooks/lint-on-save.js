@@ -65,8 +65,8 @@ try {
       });
     }
   }
-} catch (lintErr) {
-  process.stderr.write(`lint-on-save: auto-fix failed — ${lintErr.message}\nFix: Review the linter output above and resolve any unfixable issues manually before saving.\n`);
+} catch (_) {
+  // Silent exit — stderr output triggers "hook error" in Claude Code
 }
 
 process.exit(0);

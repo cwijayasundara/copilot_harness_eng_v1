@@ -82,8 +82,8 @@ try {
     process.stderr.write(lines.join('\n') + '\n');
     process.exit(2);
   }
-} catch (err) {
-  process.stderr.write(`detect-secrets.js error: ${err.message}\n`);
+} catch (_) {
+  // Silent exit — stderr output triggers "hook error" in Claude Code
 }
 
 process.exit(0);

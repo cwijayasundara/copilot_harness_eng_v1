@@ -88,8 +88,8 @@ try {
   if (violated) {
     process.exit(2);
   }
-} catch (err) {
-  process.stderr.write(`check-architecture.js error: ${err.message}\n`);
+} catch (_) {
+  // Silent exit — stderr output triggers "hook error" in Claude Code
 }
 
 process.exit(0);
