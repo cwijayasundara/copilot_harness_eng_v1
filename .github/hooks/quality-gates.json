@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "hooks": [
+    {
+      "event": "postToolUse",
+      "tools": ["edit"],
+      "command": {
+        "bash": "node hooks/lint-on-save.js",
+        "timeoutSec": 30
+      }
+    },
+    {
+      "event": "postToolUse",
+      "tools": ["edit"],
+      "command": {
+        "bash": "node hooks/typecheck.js",
+        "timeoutSec": 30
+      }
+    },
+    {
+      "event": "postToolUse",
+      "tools": ["edit"],
+      "command": {
+        "bash": "node hooks/check-architecture.js",
+        "timeoutSec": 10
+      }
+    },
+    {
+      "event": "postToolUse",
+      "tools": ["edit"],
+      "command": {
+        "bash": "node hooks/check-function-length.js",
+        "timeoutSec": 5
+      }
+    },
+    {
+      "event": "postToolUse",
+      "tools": ["edit"],
+      "command": {
+        "bash": "node hooks/check-file-length.js",
+        "timeoutSec": 5
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "hooks": [
+    {
+      "event": "postToolUse",
+      "tools": ["execute"],
+      "command": {
+        "bash": "node hooks/pre-commit-gate.js",
+        "timeoutSec": 60
+      }
+    },
+    {
+      "event": "postToolUse",
+      "tools": ["execute"],
+      "command": {
+        "bash": "node hooks/sprint-contract-gate.js",
+        "timeoutSec": 10
+      }
+    },
+    {
+      "event": "sessionEnd",
+      "command": {
+        "bash": "node hooks/task-completed.js",
+        "timeoutSec": 10
+      }
+    }
+  ]
+}

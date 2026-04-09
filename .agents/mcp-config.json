@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "local",
+      "command": "npx",
+      "args": ["-y", "@context7/mcp-server"],
+      "tools": ["query-docs", "resolve-library-id"]
+    }
+  }
+}

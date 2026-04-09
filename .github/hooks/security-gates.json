@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "hooks": [
+    {
+      "event": "postToolUse",
+      "tools": ["edit"],
+      "command": {
+        "bash": "node hooks/protect-env.js",
+        "timeoutSec": 10
+      }
+    },
+    {
+      "event": "postToolUse",
+      "tools": ["edit"],
+      "command": {
+        "bash": "node hooks/detect-secrets.js",
+        "timeoutSec": 10
+      }
+    },
+    {
+      "event": "postToolUse",
+      "tools": ["edit"],
+      "command": {
+        "bash": "node hooks/scope-directory.js",
+        "timeoutSec": 10
+      }
+    }
+  ]
+}
