@@ -26,7 +26,7 @@ Refactoring improves the internal structure of existing code without changing it
 
 ### Step 1 — Read Quality Principles
 
-Read `.agents/skills/code-gen/SKILL.md` in full. The six principles are the refactoring standard. Every change planned in Step 4 must cite a specific principle.
+Read `.github/skills/code-gen/SKILL.md` in full. The six principles are the refactoring standard. Every change planned in Step 4 must cite a specific principle.
 
 ### Step 2 — Analyze Current State
 

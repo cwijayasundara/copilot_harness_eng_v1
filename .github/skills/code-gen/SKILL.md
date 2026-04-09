@@ -302,7 +302,7 @@ logger.debug(
 
 ## External API Integration
 
-When generated code calls any external API (third-party services, partner APIs, cloud services), follow these rules. See `.agents/skills/code-gen/references/api-integration-patterns.md` for full templates.
+When generated code calls any external API (third-party services, partner APIs, cloud services), follow these rules. See `.github/skills/code-gen/references/api-integration-patterns.md` for full templates.
 
 ### Service Wrapper Pattern (Mandatory)
 

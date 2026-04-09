@@ -5,7 +5,7 @@
 Strict layered architecture — dependencies flow downward only:
 UI → API → Service → Repository → Config → Types
 
-The `check-architecture` hook enforces this on every file save. See `.agents/architecture.md` for full rules.
+The `check-architecture` hook enforces this on every file save. See `.github/architecture.md` for full rules.
 
 ## Code Style
 

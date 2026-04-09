@@ -41,7 +41,7 @@ Before loading code or invoking custom agents, invoke `superpowers:writing-plans
 
 ### Step 1 — Load Quality Principles
 
-Read `.agents/skills/code-gen/SKILL.md` in full. These six principles (small modules, static typing, functions under 50 lines, explicit error handling, no dead code, self-documenting names) apply to every line of code produced. Inject the full text into every teammate prompt.
+Read `.github/skills/code-gen/SKILL.md` in full. These six principles (small modules, static typing, functions under 50 lines, explicit error handling, no dead code, self-documenting names) apply to every line of code produced. Inject the full text into every teammate prompt.
 
 ### Step 2 — Load Dependency Graph
 
@@ -62,7 +62,7 @@ This ownership map is the single source of truth for file assignments during par
 
 ### Step 4 — Load Learned Rules
 
-Read `.agents/state/learned-rules.md`. Inject ALL rules verbatim into every teammate spawn prompt. Learned rules include anti-pattern code examples and better approach code — teammates must study these before writing code, not just read the rule text. Rules represent project-specific decisions made during previous sprints (naming conventions, library choices, API patterns). Skipping this step causes regressions.
+Read `.github/state/learned-rules.md`. Inject ALL rules verbatim into every teammate spawn prompt. Learned rules include anti-pattern code examples and better approach code — teammates must study these before writing code, not just read the rule text. Rules represent project-specific decisions made during previous sprints (naming conventions, library choices, API patterns). Skipping this step causes regressions.
 
 ### Step 5 — Invoke Agent Team (Multiple Stories)
 
@@ -73,8 +73,8 @@ If the group contains **2 or more stories**, invoke a team of custom agents:
 - Each teammate is invoked as a custom agent with a prompt that includes:
   - The story's acceptance criteria (full text).
   - The file ownership list from component-map.md for that story.
-  - All learned rules from `.agents/state/learned-rules.md`.
-  - All six quality principles from `.agents/skills/code-gen/SKILL.md`.
+  - All learned rules from `.github/state/learned-rules.md`.
+  - All six quality principles from `.github/skills/code-gen/SKILL.md`.
   - Instruction to follow `superpowers:test-driven-development` — write failing tests before implementation code (red-green-refactor cycle).
   - Instruction to **message teammates** before modifying any shared type or interface file.
   - Instruction to **await plan approval** before writing any code (present the plan, wait for confirmation).
@@ -135,4 +135,4 @@ If the reviewer still emits BLOCK findings after 3 retries, escalate to the user
 - **Skipping plan approval:** Leads to scope creep, missed acceptance criteria, and merge conflicts. Always require the plan step.
 - **Deferring test coverage:** Tests are written in the same sprint cycle, not later. "I'll add tests in the next sprint" is not acceptable.
 - **Vibe coding without acceptance criteria:** Every function must trace to an acceptance criterion. If the criterion does not exist, do not write the code — write the criterion first.
-- **Ignoring learned rules:** Failing to inject `.agents/state/learned-rules.md` recreates decisions the team has already made, causing style and pattern drift.
+- **Ignoring learned rules:** Failing to inject `.github/state/learned-rules.md` recreates decisions the team has already made, causing style and pattern drift.

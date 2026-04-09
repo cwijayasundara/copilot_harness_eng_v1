@@ -36,11 +36,11 @@ if (!matches || matches.length === 0) {
 // Deduplicate
 const uniquePaths = [...new Set(matches)];
 
-// Find project root by walking up from script location to find .agents/
+// Find project root by walking up from script location to find .github/
 function findProjectDir(startDir) {
   let current = startDir;
   while (true) {
-    const claudeDir = path.join(current, '.agents');
+    const claudeDir = path.join(current, '.github', 'agents');
     if (fs.existsSync(claudeDir)) {
       return current;
     }

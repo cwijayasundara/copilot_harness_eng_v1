@@ -51,7 +51,7 @@ Document this assessment before writing any code.
 
 ### Step 3 — Consult Architecture Docs
 
-Read `specs/design/` for any architecture decisions relevant to the change. Read `.agents/skills/architecture/SKILL.md` for layering rules.
+Read `specs/design/` for any architecture decisions relevant to the change. Read `.github/skills/architecture/SKILL.md` for layering rules.
 
 Confirm the planned implementation stays within the correct layer. If the improvement requires a new type, add it to the `types/` layer. If it requires a new DB query, add it to `repository/`. Do not shortcut layers.
 

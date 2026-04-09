@@ -36,11 +36,11 @@ If any of these are missing, stop and report what is absent. Do not generate tes
 
 ### Step 1 — Read Patterns
 
-Read `.agents/skills/code-gen/SKILL.md` for quality principles (typing, error handling, test structure).
+Read `.github/skills/code-gen/SKILL.md` for quality principles (typing, error handling, test structure).
 
-Read `.agents/skills/evaluation/SKILL.md` for the Playwright patterns and contract verification approach used by the evaluator.
+Read `.github/skills/evaluation/SKILL.md` for the Playwright patterns and contract verification approach used by the evaluator.
 
-If a `references/playwright.md` file exists under `.agents/skills/testing/`, read it now for project-specific Playwright patterns.
+If a `references/playwright.md` file exists under `.github/skills/testing/`, read it now for project-specific Playwright patterns.
 
 ### Step 2 — Read Acceptance Criteria
 
@@ -95,7 +95,7 @@ Rules for Playwright tests:
 Copy the config template:
 
 ```
-cp .agents/templates/playwright.config.template.ts playwright.config.ts
+cp .github/templates/playwright.config.template.ts playwright.config.ts
 ```
 
 Fill in the `baseURL` values from `project-manifest.json`. Configure `webServer` entries for each service that needs to be running during tests.

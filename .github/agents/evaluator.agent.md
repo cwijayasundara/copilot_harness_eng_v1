@@ -65,7 +65,7 @@ If health check fails after all retries, return a FAIL verdict with `failure_lay
 
 Invoke `superpowers:verification-before-completion` before emitting any PASS verdict. This ensures you have run all verification commands and confirmed output before claiming success. Evidence before assertions — always.
 
-Read `.agents/skills/evaluate/SKILL.md` for the full three-layer verification workflow, verdict format, and mode behavior. That file is the source of truth for execution steps.
+Read `.github/skills/evaluate/SKILL.md` for the full three-layer verification workflow, verdict format, and mode behavior. That file is the source of truth for execution steps.
 
 ## Structured Failure Report
 

@@ -5,7 +5,7 @@
       "event": "postToolUse",
       "tools": ["edit"],
       "command": {
-        "bash": "node hooks/lint-on-save.js",
+        "bash": "node .github/hooks/scripts/lint-on-save.js",
         "timeoutSec": 30
       }
     },
@@ -13,7 +13,7 @@
       "event": "postToolUse",
       "tools": ["edit"],
       "command": {
-        "bash": "node hooks/typecheck.js",
+        "bash": "node .github/hooks/scripts/typecheck.js",
         "timeoutSec": 30
       }
     },
@@ -21,7 +21,7 @@
       "event": "postToolUse",
       "tools": ["edit"],
       "command": {
-        "bash": "node hooks/check-architecture.js",
+        "bash": "node .github/hooks/scripts/check-architecture.js",
         "timeoutSec": 10
       }
     },
@@ -29,7 +29,7 @@
       "event": "postToolUse",
       "tools": ["edit"],
       "command": {
-        "bash": "node hooks/check-function-length.js",
+        "bash": "node .github/hooks/scripts/check-function-length.js",
         "timeoutSec": 5
       }
     },
@@ -37,7 +37,7 @@
       "event": "postToolUse",
       "tools": ["edit"],
       "command": {
-        "bash": "node hooks/check-file-length.js",
+        "bash": "node .github/hooks/scripts/check-file-length.js",
         "timeoutSec": 5
       }
     }

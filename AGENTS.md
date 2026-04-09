@@ -38,13 +38,13 @@ Invoke these by describing the task — Copilot matches to the appropriate skill
 | Path | Purpose |
 |------|---------|
 | `.github/agents/` | Custom agent definitions |
-| `.agents/skills/` | Skill definitions (SKILL.md) |
-| `.agents/state/` | Persistent state (learned rules, features, logs) |
-| `.agents/templates/` | Sprint contract, feature, config templates |
+| `.github/skills/` | Skill definitions (SKILL.md) |
+| `.github/state/` | Persistent state (learned rules, features, logs) |
+| `.github/templates/` | Sprint contract, feature, config templates |
 | `.github/hooks/` | Hook JSON configs |
-| `hooks/` | Hook Node.js scripts |
-| `.agents/program.md` | Human control knobs for /auto loop |
-| `.agents/architecture.md` | Layered architecture rules |
+| `.github/hooks/scripts/` | Hook Node.js scripts |
+| `.github/program.md` | Human control knobs for /auto loop |
+| `.github/architecture.md` | Layered architecture rules |
 
 ## GAN Architecture
 

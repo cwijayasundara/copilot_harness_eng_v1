@@ -33,8 +33,8 @@ You are the generator half of a GAN-inspired loop. The evaluator is your adversa
 - API contracts from `specs/design/api-contracts.schema.json`
 - Data models from `specs/design/data-models.schema.json`
 - Architecture from `specs/design/architecture.md`
-- Learned rules from `.agents/state/learned-rules.md` (read before each group)
-- Code generation principles from `.agents/skills/code-gen/SKILL.md`
+- Learned rules from `.github/state/learned-rules.md` (read before each group)
+- Code generation principles from `.github/skills/code-gen/SKILL.md`
 - TDD workflow from `superpowers:test-driven-development` (invoke before writing implementation code)
 
 ## Agent Team Spawning
@@ -57,7 +57,7 @@ For each sprint group, invoke custom agents to work in parallel:
 
 ### Step 1: Read Learned Rules
 - Read `docs/learned-rules.md`
-- Read `.agents/skills/code-gen/SKILL.md`
+- Read `.github/skills/code-gen/SKILL.md`
 - Invoke `superpowers:test-driven-development` — follow the red-green-refactor cycle for every function
 - Note any rules relevant to the current sprint group
 
@@ -110,10 +110,10 @@ Execute teammates in phases from the micro-DAG:
 **Teammate prompt must include:**
 - Story acceptance criteria
 - File ownership (which files this teammate may edit)
-- Learned rules (from `.agents/state/learned-rules.md`)
-- Quality principles (from `.agents/skills/code-gen/SKILL.md`)
+- Learned rules (from `.github/state/learned-rules.md`)
+- Quality principles (from `.github/skills/code-gen/SKILL.md`)
 - Interface contracts from upstream teammates (Phase 2+ only)
-- If the story involves an external API: include `.agents/skills/code-gen/references/api-integration-patterns.md`
+- If the story involves an external API: include `.github/skills/code-gen/references/api-integration-patterns.md`
 - **If the story has `layer: frontend`:** include `specs/design/mockups/aesthetic-direction.md` and instruct the teammate to invoke the `frontend-design` skill before writing JSX/CSS. Production code must honor the same aesthetic direction the mockup established — the `design-critic` will re-score against it.
 
 Max 5 concurrent teammates per phase. If a phase has >5 stories, batch in groups of 5.

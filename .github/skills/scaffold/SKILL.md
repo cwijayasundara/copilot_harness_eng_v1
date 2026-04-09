@@ -125,15 +125,15 @@ If `$PLUGIN_SOURCE` is empty, ask the user: "Where is the copilot-harness-engine
 Once you have the source path, create the target directories and copy:
 
 ```bash
-mkdir -p .github/agents .agents/skills .github/hooks hooks .agents/state .agents/templates
+mkdir -p .github/agents .github/skills .github/hooks hooks .github/state .github/templates
 cp -r $PLUGIN_SOURCE/.github/agents/ .github/agents/
-cp -r $PLUGIN_SOURCE/.agents/skills/ .agents/skills/
+cp -r $PLUGIN_SOURCE/.github/skills/ .github/skills/
 cp -r $PLUGIN_SOURCE/.github/hooks/ .github/hooks/
-cp -r $PLUGIN_SOURCE/hooks/ hooks/
-cp -r $PLUGIN_SOURCE/.agents/state/ .agents/state/
-cp -r $PLUGIN_SOURCE/.agents/templates/ .agents/templates/
-cp $PLUGIN_SOURCE/.agents/architecture.md .agents/architecture.md
-cp $PLUGIN_SOURCE/.agents/program.md .agents/program.md
+cp -r $PLUGIN_SOURCE/hooks/scripts/ .github/hooks/scripts/
+cp -r $PLUGIN_SOURCE/.github/state/ .github/state/
+cp -r $PLUGIN_SOURCE/.github/templates/ .github/templates/
+cp $PLUGIN_SOURCE/.github/architecture.md .github/architecture.md
+cp $PLUGIN_SOURCE/.github/program.md .github/program.md
 ```
 
 **Important:** You MUST actually run these copy commands via shell. Do NOT skip this step or try to generate the files from memory. The source files contain hooks, agent definitions, and skill instructions that must be copied exactly.
@@ -166,22 +166,22 @@ here — agents discover details by reading the referenced skill files.
 ## Architecture
 
 Strict layered architecture: Types → Config → Repository → Service → API → UI.
-One-way dependencies only. See `.agents/architecture.md` for full rules.
+One-way dependencies only. See `.github/architecture.md` for full rules.
 
 ## Where to Find Things
 
 | What | Where |
 |------|-------|
-| Architecture rules | `.agents/architecture.md` |
-| Quality principles | `.agents/skills/code-gen/SKILL.md` |
-| Testing patterns | `.agents/skills/testing/SKILL.md` |
-| Evaluation rubric | `.agents/skills/evaluation/SKILL.md` |
-| Sprint contract format | `.agents/skills/evaluation/references/contract-schema.json` |
-| Playwright patterns | `.agents/skills/evaluation/references/playwright-patterns.md` |
-| Human control knobs | `.agents/program.md` |
+| Architecture rules | `.github/architecture.md` |
+| Quality principles | `.github/skills/code-gen/SKILL.md` |
+| Testing patterns | `.github/skills/testing/SKILL.md` |
+| Evaluation rubric | `.github/skills/evaluation/SKILL.md` |
+| Sprint contract format | `.github/skills/evaluation/references/contract-schema.json` |
+| Playwright patterns | `.github/skills/evaluation/references/playwright-patterns.md` |
+| Human control knobs | `.github/program.md` |
 | Session recovery | `claude-progress.txt` |
 | Feature tracking | `features.json` |
-| Learned rules | `.agents/state/learned-rules.md` |
+| Learned rules | `.github/state/learned-rules.md` |
 
 ## Pipeline Commands
 
@@ -204,7 +204,7 @@ One-way dependencies only. See `.agents/architecture.md` for full rules.
 - 100% meaningful coverage target, 80% floor
 - Functions < 50 lines, files < 300 lines
 - Static typing everywhere (zero `any`)
-- See `.agents/skills/code-gen/SKILL.md` for full rules
+- See `.github/skills/code-gen/SKILL.md` for full rules
 
 ## Git
 
@@ -222,8 +222,8 @@ Write `.github/copilot-instructions.md` with a short pointer:
 This project uses the Copilot Harness Engine for autonomous application development.
 
 See `AGENTS.md` for full project instructions, architecture, and pipeline commands.
-See `.agents/program.md` for project constraints and conventions.
-See `.agents/architecture.md` for layered architecture rules.
+See `.github/program.md` for project constraints and conventions.
+See `.github/architecture.md` for layered architecture rules.
 ```
 
 ### Generate .github/instructions/*.instructions.md
@@ -237,9 +237,9 @@ applyTo: "backend/**"
 ---
 # Backend Instructions
 
-Follow quality principles in `.agents/skills/code-gen/SKILL.md`.
-Follow architecture rules in `.agents/architecture.md`.
-Follow testing patterns in `.agents/skills/testing/SKILL.md`.
+Follow quality principles in `.github/skills/code-gen/SKILL.md`.
+Follow architecture rules in `.github/architecture.md`.
+Follow testing patterns in `.github/skills/testing/SKILL.md`.
 TDD mandatory: write tests before implementation.
 Static typing everywhere — zero `any`, zero untyped parameters.
 Functions under 50 lines, files under 300 lines.
@@ -252,9 +252,9 @@ applyTo: "frontend/**"
 ---
 # Frontend Instructions
 
-Follow quality principles in `.agents/skills/code-gen/SKILL.md`.
-Follow architecture rules in `.agents/architecture.md`.
-Follow testing patterns in `.agents/skills/testing/SKILL.md`.
+Follow quality principles in `.github/skills/code-gen/SKILL.md`.
+Follow architecture rules in `.github/architecture.md`.
+Follow testing patterns in `.github/skills/testing/SKILL.md`.
 TDD mandatory: write tests before implementation.
 Static typing everywhere — zero `any`, zero untyped parameters.
 Functions under 50 lines, files under 300 lines.
@@ -267,9 +267,9 @@ applyTo: "specs/**"
 ---
 # Specs Instructions
 
-Story files follow the format in `.agents/skills/spec/SKILL.md`.
-Sprint contracts follow the schema in `.agents/skills/evaluation/references/contract-schema.json`.
-Design artifacts follow the patterns in `.agents/skills/design/SKILL.md`.
+Story files follow the format in `.github/skills/spec/SKILL.md`.
+Sprint contracts follow the schema in `.github/skills/evaluation/references/contract-schema.json`.
+Design artifacts follow the patterns in `.github/skills/design/SKILL.md`.
 ```
 
 ## Step 6: Generate design.md
@@ -357,18 +357,18 @@ Planner   Generator  Evaluator  Test Eng  Security Rev
 
 | # | Hook                  | File                               | Trigger                        |
 |---|-----------------------|------------------------------------|--------------------------------|
-| 1 | protect-env           | `hooks/protect-env.js`             | Any file write                 |
-| 2 | detect-secrets        | `hooks/detect-secrets.js`          | Pre-commit                     |
-| 3 | scope-directory       | `hooks/scope-directory.js`         | File access                    |
-| 4 | lint-on-save          | `hooks/lint-on-save.js`            | File save (.py, .ts)           |
-| 5 | typecheck             | `hooks/typecheck.js`               | File save (.py, .ts)           |
-| 6 | check-function-length | `hooks/check-function-length.js`   | File save                      |
-| 7 | check-file-length     | `hooks/check-file-length.js`       | File save                      |
-| 8 | check-architecture    | `hooks/check-architecture.js`      | File save                      |
-| 9 | sprint-contract-gate  | `hooks/sprint-contract-gate.js`    | Pre-build                      |
-|10 | pre-commit-gate       | `hooks/pre-commit-gate.js`         | Pre-commit                     |
-|11 | task-completed        | `hooks/task-completed.js`          | Post-task                      |
-|12 | teammate-idle-check   | `hooks/teammate-idle-check.js`     | Periodic                       |
+| 1 | protect-env           | `.github/hooks/scripts/protect-env.js`             | Any file write                 |
+| 2 | detect-secrets        | `.github/hooks/scripts/detect-secrets.js`          | Pre-commit                     |
+| 3 | scope-directory       | `.github/hooks/scripts/scope-directory.js`         | File access                    |
+| 4 | lint-on-save          | `.github/hooks/scripts/lint-on-save.js`            | File save (.py, .ts)           |
+| 5 | typecheck             | `.github/hooks/scripts/typecheck.js`               | File save (.py, .ts)           |
+| 6 | check-function-length | `.github/hooks/scripts/check-function-length.js`   | File save                      |
+| 7 | check-file-length     | `.github/hooks/scripts/check-file-length.js`       | File save                      |
+| 8 | check-architecture    | `.github/hooks/scripts/check-architecture.js`      | File save                      |
+| 9 | sprint-contract-gate  | `.github/hooks/scripts/sprint-contract-gate.js`    | Pre-build                      |
+|10 | pre-commit-gate       | `.github/hooks/scripts/pre-commit-gate.js`         | Pre-commit                     |
+|11 | task-completed        | `.github/hooks/scripts/task-completed.js`          | Post-task                      |
+|12 | teammate-idle-check   | `.github/hooks/scripts/teammate-idle-check.js`     | Periodic                       |
 
 ## State Files
 
@@ -478,7 +478,7 @@ next_action: Run /brd to start
 
 ## Step 10: Generate MCP Configuration
 
-Write `.agents/mcp-config.json` with the MCP server configuration for the project. This file is pasted into the GitHub repo's Copilot cloud agent MCP configuration:
+Write `.github/mcp-config.json` with the MCP server configuration for the project. This file is pasted into the GitHub repo's Copilot cloud agent MCP configuration:
 
 ```json
 {
@@ -507,15 +507,15 @@ Copilot Harness Engine v1 scaffolded successfully.
 
 Installed:
   7 agents      → .github/agents/
-  17 skills     → .agents/skills/
+  17 skills     → .github/skills/
   12 hooks      → .github/hooks/ (JSON configs) + hooks/ (JS scripts)
-  5 templates   → .agents/templates/
-  5 state files → .agents/state/
-  MCP config    → .agents/mcp-config.json
+  5 templates   → .github/templates/
+  5 state files → .github/state/
+  MCP config    → .github/mcp-config.json
 
 Next steps:
 1. Push to GitHub (hooks must be on default branch)
 2. Go to repo Settings > Copilot > Cloud agent
-3. Paste contents of .agents/mcp-config.json into MCP configuration
+3. Paste contents of .github/mcp-config.json into MCP configuration
 4. Assign an issue to Copilot to verify setup
 ```

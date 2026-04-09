@@ -5,7 +5,7 @@
       "event": "postToolUse",
       "tools": ["execute"],
       "command": {
-        "bash": "node hooks/pre-commit-gate.js",
+        "bash": "node .github/hooks/scripts/pre-commit-gate.js",
         "timeoutSec": 60
       }
     },
@@ -13,14 +13,14 @@
       "event": "postToolUse",
       "tools": ["execute"],
       "command": {
-        "bash": "node hooks/sprint-contract-gate.js",
+        "bash": "node .github/hooks/scripts/sprint-contract-gate.js",
         "timeoutSec": 10
       }
     },
     {
       "event": "sessionEnd",
       "command": {
-        "bash": "node hooks/task-completed.js",
+        "bash": "node .github/hooks/scripts/task-completed.js",
         "timeoutSec": 10
       }
     }

@@ -54,8 +54,8 @@ This skill scans for deviations from golden principles and generates targeted re
 
 ## Steps
 
-1. Read `.agents/skills/code-gen/SKILL.md` for golden principles
-2. Read `.agents/state/learned-rules.md` for project-specific rules
+1. Read `.github/skills/code-gen/SKILL.md` for golden principles
+2. Read `.github/state/learned-rules.md` for project-specific rules
 3. Scan source directories for each category above
 4. Generate report to `specs/reviews/drift-report.md`:
    - Category, file:line, description, suggested fix

@@ -87,18 +87,25 @@ function checkArchitectureViolations(pyFiles) {
   return violations;
 }
 
-// Parse stdin — non-fatal if missing/invalid
+let input;
 try {
-  JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
+  input = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
 } catch (_) {
-  // Non-blocking: continue even if stdin is invalid
+  process.exit(0);
 }
 
-// Find project root by walking up from script location to find .agents/
+const command = (input.tool_input && input.tool_input.command) || '';
+
+// Only activate on git commit commands
+if (!command.includes('git commit')) {
+  process.exit(0);
+}
+
+// Find project root by walking up from script location to find .github/
 function findProjectDir(startDir) {
   let current = startDir;
   while (true) {
-    const claudeDir = path.join(current, '.agents');
+    const claudeDir = path.join(current, '.github', 'agents');
     if (fs.existsSync(claudeDir)) {
       return current;
     }
@@ -115,25 +122,20 @@ const projectDir = findProjectDir(scriptDir) || process.cwd();
 
 const srcDir = path.join(projectDir, 'src');
 
-if (fs.existsSync(srcDir)) {
-  const pyFiles = findPyFiles(srcDir);
-  const violations = checkArchitectureViolations(pyFiles);
-
-  if (violations.length > 0) {
-    process.stdout.write('Architecture check: FAIL\n');
-    for (const v of violations) {
-      process.stdout.write(`  ${v}\n`);
-    }
-    process.stdout.write('Fix: Run /review to get specific findings, then fix before proceeding.\n');
-  } else {
-    process.stdout.write('Architecture check: PASS\n');
-  }
-} else {
-  process.stdout.write('Architecture check: PASS (no src/ directory found)\n');
+if (!fs.existsSync(srcDir)) {
+  process.exit(0);
 }
 
-// Always remind about /review
-process.stdout.write('Run /review before marking phase complete.\n');
+const pyFiles = findPyFiles(srcDir);
+const violations = checkArchitectureViolations(pyFiles);
 
-// Non-blocking: always exit 0
+if (violations.length > 0) {
+  process.stdout.write('BLOCKED: Architecture violations found — fix before committing:\n');
+  for (const v of violations) {
+    process.stdout.write(`  ${v}\n`);
+  }
+  process.stdout.write('Fix: Move imports to the correct layer or extract shared types to src/types/.\n');
+  process.exit(2);
+}
+
 process.exit(0);

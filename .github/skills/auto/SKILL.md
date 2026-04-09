@@ -30,7 +30,7 @@ Before `/auto` can run, the following must exist:
 
 - `specs/stories/` — approved story files with acceptance criteria.
 - `specs/design/` — approved architecture artifacts including `api-contracts.md` and `component-map.md`.
-- `.agents/program.md` — project constraints and conventions.
+- `.github/program.md` — project constraints and conventions.
 - `features.json` — feature tracking file (created by `/spec`).
 - `specs/stories/dependency-graph.md` — group ordering and dependencies.
 - `claude-progress.txt` — session tracking file (created by `/build` phase 4).
@@ -53,8 +53,8 @@ If any prerequisite is missing, stop and report what is absent. Do not proceed w
 
 At the start of EVERY iteration — including the first — read these files in order:
 
-1. **`.agents/program.md`** — Constraints may have changed mid-run. Re-read every iteration. Never cache.
-2. **`.agents/state/learned-rules.md`** — Accumulated project rules. Inject verbatim into ALL agent prompts spawned this iteration.
+1. **`.github/program.md`** — Constraints may have changed mid-run. Re-read every iteration. Never cache.
+2. **`.github/state/learned-rules.md`** — Accumulated project rules. Inject verbatim into ALL agent prompts spawned this iteration.
 3. **`claude-progress.txt`** — Read the LAST session block (the block after the final `=== Session` marker). Extract: `current_group`, `groups_completed`, `groups_remaining`, `last_commit`, `next_action`.
 4. **`features.json`** — Current pass/fail state for all features. Determines what work remains.
 5. **`specs/stories/dependency-graph.md`** — Pick the next unfinished group. A group is "unfinished" if any of its stories' features are not passing in `features.json`. Respect dependency ordering: do not start a group whose upstream dependencies have failing features.
@@ -121,10 +121,10 @@ Note: Agent teams are invoked via custom agents. Each teammate is a custom agent
 Every teammate receives:
 - Story acceptance criteria (from `specs/stories/story-NNN.md`)
 - File ownership (from `specs/design/component-map.md`)
-- Learned rules (from `.agents/state/learned-rules.md` — inject verbatim)
-- Quality principles (from `.agents/skills/code-gen/SKILL.md`)
+- Learned rules (from `.github/state/learned-rules.md` — inject verbatim)
+- Quality principles (from `.github/skills/code-gen/SKILL.md`)
 - Interface contracts from upstream teammates (Phase 2+ only)
-- If story involves external API: `.agents/skills/code-gen/references/api-integration-patterns.md`
+- If story involves external API: `.github/skills/code-gen/references/api-integration-patterns.md`
 
 ### Solo Mode
 
@@ -209,7 +209,7 @@ All four commands must exit with code 0.
 uv run pytest --cov=src --cov-report=term-missing -q | grep "^TOTAL" | awk '{print $NF}'
 ```
 
-Compare the result with `.agents/state/coverage-baseline.txt`. The new coverage percentage must be **greater than or equal to the baseline AND >= 80% (hard floor)**. If it drops below either threshold, the gate FAILS — even if all tests pass.
+Compare the result with `.github/state/coverage-baseline.txt`. The new coverage percentage must be **greater than or equal to the baseline AND >= 80% (hard floor)**. If it drops below either threshold, the gate FAILS — even if all tests pass.
 
 **Coverage policy (ref: "AI is forcing us to write good code" by Steve Krenzel):**
 - **Floor: 80%.** No commit may drop below this. The ratchet gate BLOCKS.
@@ -298,7 +298,7 @@ Do not immediately revert. Attempt targeted self-healing first.
 
 5. **3rd failure — hard stop for this group:**
    - Revert changes: `git checkout -- .`
-   - Log the failure to `.agents/state/failures.md` with group ID, failure category, all three attempt summaries.
+   - Log the failure to `.github/state/failures.md` with group ID, failure category, all three attempt summaries.
    - Extract a learned rule (see SECTION 12).
    - Mark the group as BLOCKED in `claude-progress.txt`.
    - Escalate to the user with a summary.
@@ -336,14 +336,14 @@ docker compose down -v
 
 **Startup:**
 1. Read `verification.local.start_commands` from manifest
-2. Start each command as a background process, capture stdout/stderr to `.agents/state/process-{name}.log`
+2. Start each command as a background process, capture stdout/stderr to `.github/state/process-{name}.log`
 3. Run health-check retry loop against configured URLs
 
 **Between Groups:** Kill and restart processes (re-run start commands).
 
 **Teardown:** Kill all background processes started by the orchestrator.
 
-**Error Context:** Read from `.agents/state/process-{name}.log`
+**Error Context:** Read from `.github/state/process-{name}.log`
 
 ### Mode: stub
 
@@ -515,11 +515,11 @@ Learned rules are the harness's long-term memory. They prevent the same mistake 
 
 ### When to Extract a Rule
 
-Extract a new rule when the same error type (by category from SECTION 6) appears **2 or more times** in `.agents/state/failures.md`. Check after every failure entry.
+Extract a new rule when the same error type (by category from SECTION 6) appears **2 or more times** in `.github/state/failures.md`. Check after every failure entry.
 
 ### Rule Format
 
-Append to `.agents/state/learned-rules.md`:
+Append to `.github/state/learned-rules.md`:
 
 ```markdown
 ## Rule {N}: {descriptive title}

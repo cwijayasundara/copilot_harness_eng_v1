@@ -33,5 +33,5 @@ venv/
 .claude/state/
 
 # Ephemeral agent state
-.agents/state/failures.md
-.agents/state/eval-scores.json
+.github/state/failures.md
+.github/state/eval-scores.json

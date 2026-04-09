@@ -14,17 +14,17 @@ function normalizeInput(raw) {
 const fs = require('fs');
 const path = require('path');
 
-// Walk up from this script's location to find the directory that contains .agents/
+// Walk up from this script's location to find the directory that contains .github/
 function findProjectDir(startDir) {
   let current = startDir;
   while (true) {
-    const claudeDir = path.join(current, '.agents');
+    const claudeDir = path.join(current, '.github', 'agents');
     if (fs.existsSync(claudeDir)) {
       return current;
     }
     const parent = path.dirname(current);
     if (parent === current) {
-      // Reached filesystem root without finding .agents
+      // Reached filesystem root without finding .github/agents
       return null;
     }
     current = parent;
@@ -51,7 +51,7 @@ try {
   const projectDir = findProjectDir(scriptDir);
 
   if (!projectDir) {
-    process.stdout.write('BLOCKED: Could not determine project directory (no .agents/ found in ancestors)\n');
+    process.stdout.write('BLOCKED: Could not determine project directory (no .github/ found in ancestors)\n');
     process.exit(2);
   }
 
@@ -59,7 +59,7 @@ try {
 
   // Ensure the file path is within the project directory
   if (!resolvedFilePath.startsWith(resolvedProject + path.sep) && resolvedFilePath !== resolvedProject) {
-    process.stdout.write(`BLOCKED: Write outside project directory: ${resolvedFilePath}\nFix: Move the file to a location within the project directory or use .agents/ for scaffold files.\n`);
+    process.stdout.write(`BLOCKED: Write outside project directory: ${resolvedFilePath}\nFix: Move the file to a location within the project directory or use .github/ for scaffold files.\n`);
     process.exit(2);
   }
 } catch (_) {

@@ -29,11 +29,11 @@ if (!command.includes('git commit')) {
   process.exit(0);
 }
 
-// Find project root by walking up from script location to find .agents/
+// Find project root by walking up from script location to find .github/
 function findProjectDir(startDir) {
   let current = startDir;
   while (true) {
-    const claudeDir = path.join(current, '.agents');
+    const claudeDir = path.join(current, '.github', 'agents');
     if (fs.existsSync(claudeDir)) {
       return current;
     }
@@ -49,7 +49,7 @@ const scriptDir = path.dirname(path.resolve(__filename));
 const projectDir = findProjectDir(scriptDir) || process.cwd();
 
 // Read claude-progress.txt to find current_group
-const progressFile = path.join(projectDir, '.agents', 'state', 'claude-progress.txt');
+const progressFile = path.join(projectDir, '.github', 'state', 'claude-progress.txt');
 
 let progressContent;
 try {

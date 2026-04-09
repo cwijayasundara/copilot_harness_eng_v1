@@ -87,25 +87,18 @@ function checkArchitectureViolations(pyFiles) {
   return violations;
 }
 
-let input;
+// Parse stdin — non-fatal if missing/invalid
 try {
-  input = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
+  JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
 } catch (_) {
-  process.exit(0);
+  // Non-blocking: continue even if stdin is invalid
 }
 
-const command = (input.tool_input && input.tool_input.command) || '';
-
-// Only activate on git commit commands
-if (!command.includes('git commit')) {
-  process.exit(0);
-}
-
-// Find project root by walking up from script location to find .agents/
+// Find project root by walking up from script location to find .github/
 function findProjectDir(startDir) {
   let current = startDir;
   while (true) {
-    const claudeDir = path.join(current, '.agents');
+    const claudeDir = path.join(current, '.github', 'agents');
     if (fs.existsSync(claudeDir)) {
       return current;
     }
@@ -122,20 +115,25 @@ const projectDir = findProjectDir(scriptDir) || process.cwd();
 
 const srcDir = path.join(projectDir, 'src');
 
-if (!fs.existsSync(srcDir)) {
-  process.exit(0);
-}
+if (fs.existsSync(srcDir)) {
+  const pyFiles = findPyFiles(srcDir);
+  const violations = checkArchitectureViolations(pyFiles);
 
-const pyFiles = findPyFiles(srcDir);
-const violations = checkArchitectureViolations(pyFiles);
-
-if (violations.length > 0) {
-  process.stdout.write('BLOCKED: Architecture violations found — fix before committing:\n');
-  for (const v of violations) {
-    process.stdout.write(`  ${v}\n`);
+  if (violations.length > 0) {
+    process.stdout.write('Architecture check: FAIL\n');
+    for (const v of violations) {
+      process.stdout.write(`  ${v}\n`);
+    }
+    process.stdout.write('Fix: Run /review to get specific findings, then fix before proceeding.\n');
+  } else {
+    process.stdout.write('Architecture check: PASS\n');
   }
-  process.stdout.write('Fix: Move imports to the correct layer or extract shared types to src/types/.\n');
-  process.exit(2);
+} else {
+  process.stdout.write('Architecture check: PASS (no src/ directory found)\n');
 }
 
+// Always remind about /review
+process.stdout.write('Run /review before marking phase complete.\n');
+
+// Non-blocking: always exit 0
 process.exit(0);

@@ -11,7 +11,7 @@ Reference skill for the evaluator agent. Points to authoritative sources for eva
 
 ## Full Workflow
 
-Read `.agents/skills/evaluate/SKILL.md` for the complete three-layer verification workflow, execution steps, verdict format, and mode behavior.
+Read `.github/skills/evaluate/SKILL.md` for the complete three-layer verification workflow, execution steps, verdict format, and mode behavior.
 
 ## References
 
