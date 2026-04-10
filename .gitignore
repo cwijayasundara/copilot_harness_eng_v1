@@ -1,6 +1,5 @@
 # Generated files
 generate_pptx.py
-*.pptx
 
 # Python
 __pycache__/
