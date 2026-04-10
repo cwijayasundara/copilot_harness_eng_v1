@@ -1,8 +1,8 @@
-# Claude Harness Engine v1 — Architecture Reference
+# Copilot Harness Engine v1 — Architecture Reference
 
-Comprehensive design document for the Claude Harness Engine: a GAN-inspired orchestration system for autonomous, long-running application development with Claude Code.
+Comprehensive design document for the Copilot Harness Engine: a GAN-inspired orchestration system for autonomous, long-running application development with the GitHub Copilot coding agent.
 
-Copied into target projects by `/scaffold`.
+Copied into target projects by the `/scaffold` skill.
 
 Based on:
 - [Anthropic: Harness Design for Long-Running Apps](https://www.anthropic.com/engineering/harness-design-long-running-apps)
@@ -43,7 +43,7 @@ Together: the GAN ensures honest verification at each step, and the ratchet ensu
 +---------------------------------------------------------------------+
 |                        HUMAN INTERFACE                                |
 |                                                                      |
-|  program.md           CLAUDE.md            project-manifest.json     |
+|  program.md           AGENTS.md            project-manifest.json     |
 |  (Karpathy bridge)    (table of contents)  (stack + eval config)     |
 +--------+------------------+--------------------+--------------------+
          |                  |                    |
@@ -60,9 +60,10 @@ Together: the GAN ensures honest verification at each step, and the ratchet ensu
 |                                  v           v           v           |
 |                             Generator   Evaluator   Design-Critic    |
 |                                  |           |           |           |
-|                             Agent Teams  Playwright   Vision Score   |
-|                             (parallel     MCP + API    (GAN loop,   |
-|                              stories)    + Docker logs  weighted)    |
+|                             Custom       Playwright   Vision Score   |
+|                             Agents       MCP + API    (GAN loop,    |
+|                             (parallel    + Docker logs  weighted)    |
+|                              stories)                               |
 |                                                                      |
 |  Support: /fix-issue  /refactor  /improve  /lint-drift  /deploy      |
 +--------+------------------+--------------------+--------------------+
@@ -73,8 +74,9 @@ Together: the GAN ensures honest verification at each step, and the ratchet ensu
 |  planner / generator / evaluator / design-critic /                   |
 |  security-reviewer / ui-designer / test-engineer                     |
 |                                                                      |
-|  Model tiering: Opus for judgment (orchestrator, evaluator, critic)  |
-|                 Sonnet for execution (generator teammates)           |
+|  Model tiering: High tier for judgment (orchestrator, evaluator,     |
+|                 critic). Standard tier for execution (generator,     |
+|                 sub-agents)                                          |
 +--------+------------------+--------------------+--------------------+
          |                  |                    |
          v                  v                    v
@@ -524,15 +526,7 @@ Superpowers provides 14 skills focused on developer discipline — brainstorming
 
 ### How It Works
 
-Superpowers is enabled as a plugin in `.claude/settings.json`:
-
-```json
-"enabledPlugins": {
-  "superpowers@claude-plugins-official": true
-}
-```
-
-Each integration point invokes the superpowers skill by name (e.g., `superpowers:brainstorming`). The skill's output feeds into the next pipeline step — it augments the workflow, not replaces it. For example, brainstorming output feeds into the BRD interview, not bypasses it.
+Each integration point invokes the relevant skill by name (e.g., the brainstorming skill). The skill's output feeds into the next pipeline step — it augments the workflow, not replaces it. For example, brainstorming output feeds into the BRD interview, not bypasses it.
 
 ### Design Rationale
 
@@ -568,7 +562,7 @@ Phases 1-3 (`/brd`, `/spec`, `/design`) require human approval. Phases 4-8 run a
 
 ## 13. Quality Principles
 
-Detailed rules in `.claude/skills/code-gen/SKILL.md`. Summary:
+Detailed rules in `.github/skills/code-gen/SKILL.md`. Summary:
 
 1. **TDD mandatory** — Write failing tests FIRST, then implement. Red-green-refactor.
 2. **100% meaningful coverage** — Every line verified by a test. 80% hard floor.

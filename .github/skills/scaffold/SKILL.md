@@ -116,7 +116,7 @@ First, locate the plugin source directory by finding the harness engine repo:
 
 ```bash
 # Find the harness engine by looking for its unique marker files
-PLUGIN_SOURCE=$(find ~/Documents ~/claude-harness-engine ~ -maxdepth 6 -name "AGENTS.md" -path "*copilot_harness*" -exec dirname {} \; 2>/dev/null | head -1)
+PLUGIN_SOURCE=$(find ~/Documents ~/copilot-harness-engine ~ -maxdepth 6 -name "AGENTS.md" -path "*copilot_harness*" -exec dirname {} \; 2>/dev/null | head -1)
 echo "Found plugin at: $PLUGIN_SOURCE"
 ```
 

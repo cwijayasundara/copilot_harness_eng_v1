@@ -23,6 +23,13 @@
         "bash": "node .github/hooks/scripts/task-completed.js",
         "timeoutSec": 10
       }
+    },
+    {
+      "event": "teammateIdle",
+      "command": {
+        "bash": "node .github/hooks/scripts/teammate-idle-check.js",
+        "timeoutSec": 10
+      }
     }
   ]
 }

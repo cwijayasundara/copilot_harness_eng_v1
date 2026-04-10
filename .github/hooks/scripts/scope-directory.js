@@ -32,8 +32,9 @@ function findProjectDir(startDir) {
 }
 
 try {
-  const input = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
-  const filePath = input.tool_input && input.tool_input.file_path;
+  const raw = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
+  const input = normalizeInput(raw);
+  const filePath = input.file_path || (input.tool_input && input.tool_input.file_path);
 
   if (!filePath) {
     process.exit(0);
@@ -63,7 +64,7 @@ try {
     process.exit(2);
   }
 } catch (_) {
-  // Silent exit — stderr output triggers "hook error" in Claude Code
+  // Silent exit — stderr output triggers "hook error" in the agent
 }
 
 process.exit(0);

@@ -29,9 +29,6 @@ node_modules/
 venv/
 .venv/
 
-# Claude state (local only)
-.claude/state/
-
 # Ephemeral agent state
 .github/state/failures.md
 .github/state/eval-scores.json

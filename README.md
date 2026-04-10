@@ -1,108 +1,241 @@
-# Claude Harness Engine v1
+# Copilot Harness Engine v1
 
-> GAN-inspired harness for autonomous long-running application development with Claude Code
+> GAN-inspired harness for autonomous long-running application development with GitHub Copilot coding agent
 
-A Claude Code plugin scaffold that implements best practices from [Anthropic](https://www.anthropic.com/engineering/harness-design-long-running-apps) and [OpenAI](https://openai.com/index/harness-engineering/) harness engineering research. Combines Karpathy's autoresearch ratcheting with a Generator-Evaluator architecture, agent teams, session chaining, and three-layer verification.
+A scaffold for **GitHub Copilot's cloud-based coding agent** that implements best practices from [Anthropic](https://www.anthropic.com/engineering/harness-design-long-running-apps) and [OpenAI](https://openai.com/index/harness-engineering/) harness engineering research. Combines Karpathy's autoresearch ratcheting with a Generator-Evaluator architecture, custom agent teams, session chaining, and three-layer verification.
+
+See `docs/claude-vs-copilot-scaffold.md` for a comparison deck explaining how this scaffold differs from the Claude Code local development variant.
+
+## Architecture Diagram
+
+```
+                        COPILOT HARNESS ENGINE — SCAFFOLD ARCHITECTURE
+ ================================================================================
+
+                                YOUR GITHUB REPO
+                                ================
+  .github/
+  +-----------------------------------------------------------------------+
+  |                                                                       |
+  |  copilot-instructions.md          Global instructions (code style,    |
+  |                                   architecture, testing, quality)     |
+  |                                                                       |
+  |  architecture.md                  Layered dependency rules            |
+  |  program.md                       Karpathy human-agent bridge         |
+  |  mcp-config.json                  MCP server definitions (context7)   |
+  |                                                                       |
+  |  agents/                          7 AGENT DEFINITIONS                 |
+  |  +----------------------------+                                       |
+  |  | planner.agent.md           |   BRD, specs, architecture            |
+  |  | generator.agent.md         |   Code + tests, spawns sub-agents    |
+  |  | evaluator.agent.md         |   Runs app, verifies contracts       |
+  |  | design-critic.agent.md     |   GAN scoring (4 criteria)           |
+  |  | security-reviewer.agent.md |   OWASP vulnerability scan           |
+  |  | ui-designer.agent.md       |   React+Tailwind mockups             |
+  |  | test-engineer.agent.md     |   Test plans + Playwright E2E       |
+  |  +----------------------------+                                       |
+  |                                                                       |
+  |  skills/                          19 SKILL DEFINITIONS                |
+  |  +----------------------------+                                       |
+  |  | scaffold/  brd/  spec/     |   SDLC pipeline stages               |
+  |  | design/  build/  auto/     |   Autonomous ratcheting loop          |
+  |  | implement/  evaluate/      |   Code gen + verification            |
+  |  | review/  test/  deploy/    |   Quality gates + deployment         |
+  |  | fix-issue/  refactor/      |   Maintenance workflows              |
+  |  | improve/  lint-drift/      |   Enhancement + entropy control      |
+  |  | code-gen/  architecture/   |   Principles + references            |
+  |  | evaluation/  testing/      |   Patterns + rubrics                 |
+  |  +----------------------------+                                       |
+  |                                                                       |
+  |  hooks/                           QUALITY GATE HOOKS                  |
+  |  +----------------------------+                                       |
+  |  | pipeline-gates.json        |   Pre-commit, sprint contract,       |
+  |  | quality-gates.json         |   Lint, typecheck, architecture,     |
+  |  | security-gates.json        |   Secrets, env, scope validation     |
+  |  | scripts/                   |   12 JS hook scripts with adapters   |
+  |  +----------------------------+                                       |
+  |                                                                       |
+  |  instructions/                    FILE-SCOPED RULES                   |
+  |  +----------------------------+                                       |
+  |  | backend.instructions.md    |   Python rules for backend/**/*.py   |
+  |  | frontend.instructions.md   |   TS rules for frontend/**/*.{ts,tsx}|
+  |  +----------------------------+                                       |
+  |                                                                       |
+  |  state/                           RUNTIME STATE                       |
+  |  +----------------------------+                                       |
+  |  | features.json              |   Feature registry + status          |
+  |  | eval-scores.json           |   Evaluation scores per iteration    |
+  |  | coverage-baseline.txt      |   Coverage floor (80%)               |
+  |  | failures.md                |   Failure patterns + resolutions     |
+  |  | iteration-log.md           |   Iteration log + self-healing       |
+  |  | learned-rules.md           |   Discovered project-specific rules  |
+  |  +----------------------------+                                       |
+  |                                                                       |
+  |  templates/                       GENERATION TEMPLATES                |
+  |  +----------------------------+                                       |
+  |  | docker-compose.template.yml|   Docker Compose stack               |
+  |  | sprint-contract.json       |   Sprint contract schema             |
+  |  | playwright.config.template |   Playwright E2E config              |
+  |  | features-template.json     |   Feature definition schema          |
+  |  | init-sh.template           |   Bootstrap script                   |
+  |  +----------------------------+                                       |
+  +-----------------------------------------------------------------------+
+```
+
+## How the Copilot Cloud Agent Works
+
+```
+  DEPLOYMENT FLOW — FROM REPO TO RUNNING AGENT
+  =============================================
+
+  1. PUSH              2. TRIGGER              3. PROVISION            4. EXECUTE
+  --------            ---------               ----------              ---------
+
+  Developer           GitHub Issue             GitHub Cloud             Agent runs
+  pushes .github/     assigned to              spins up a               inside the
+  scaffold to repo    @copilot or              Codespace-like           VM with full
+                      /copilot slash           VM with the              repo access
+  +--------+          command                  repo checked out
+  |  Your  |                                                           +----------+
+  |  Repo  |---+      +----------+             +-----------+           |  Copilot |
+  | (.github/) |      | Issue:   |             | GitHub-   |           |  Agent   |
+  +--------+   +----->| "Add     |------------>| hosted    |---------->|  reads   |
+               push   |  auth    |  triggers   | Linux VM  | provisions| .github/ |
+               to     |  system" |  agent      | (Ubuntu)  | and runs  | configs  |
+               main   +----------+             +-----------+           +----------+
+                      assigned to                    |                       |
+                      copilot[bot]                   |                       |
+                                                     v                       v
+                                              +-----------+           +----------+
+                                              | Node 20+  |           | Creates  |
+                                              | Python 3  |           | branch,  |
+                                              | Docker    |           | writes   |
+                                              | Git CLI   |           | code,    |
+                                              | gh CLI    |           | runs     |
+                                              +-----------+           | tests,   |
+                                              pre-installed           | opens PR |
+                                              toolchain               +----------+
+
+
+  5. AGENT EXECUTION DETAIL
+  =========================
+
+  +-------------------------------------------------------------------+
+  |                    COPILOT CLOUD VM                                |
+  |                                                                   |
+  |  +-------------------+     reads      +------------------------+  |
+  |  | copilot-           |<------------- | .github/agents/*.md    |  |
+  |  | instructions.md    |               | .github/skills/*.md    |  |
+  |  | (global rules)     |               | .github/hooks/*.json   |  |
+  |  +-------------------+               | .github/instructions/  |  |
+  |                                       | .github/mcp-config.json|  |
+  |                                       +------------------------+  |
+  |                                                                   |
+  |  +-----------+    spawns    +-----------+    spawns               |
+  |  | Planner   |------------> | Generator |----------+              |
+  |  | Agent     |              | Agent     |          |              |
+  |  +-----------+              +-----------+     +----+----+         |
+  |       |                          |            | Custom  |         |
+  |       v                          v            | Agents  |         |
+  |  +----------+              +-----------+      | (sub-   |         |
+  |  | BRD,     |              | Code +    |      | agents) |         |
+  |  | Stories, |              | Tests     |      +---------+         |
+  |  | Specs    |              +-----------+           |              |
+  |  +----------+                    |                 |              |
+  |                                  v                 v              |
+  |                         +-------------------+                     |
+  |                         | Evaluator Agent   |                     |
+  |                         | (GAN adversary)   |                     |
+  |                         +-------------------+                     |
+  |                                  |                                |
+  |                    PASS: commit + next group                      |
+  |                    FAIL: self-heal (3x) or revert                 |
+  |                                  |                                |
+  |                                  v                                |
+  |                         +-------------------+                     |
+  |                         | Opens Pull        |                     |
+  |                         | Request           |                     |
+  |                         +-------------------+                     |
+  +-------------------------------------------------------------------+
+```
+
+## Where Does the Copilot Cloud Agent Run?
+
+The Copilot coding agent runs on **GitHub-hosted cloud infrastructure**:
+
+| Aspect | Detail |
+|--------|--------|
+| **Runtime** | GitHub-managed Linux VM (Ubuntu-based, similar to Codespaces) |
+| **Trigger** | Assigning an issue to `copilot[bot]`, or using Copilot slash commands |
+| **Repo access** | Full clone of the repo — reads `.github/` configs at startup |
+| **Tools available** | `read`, `edit`, `search`, `execute` (shell), `agent` (sub-agents), `github/*` (API) |
+| **Network** | Outbound internet access (for npm/pip installs, MCP servers, Docker pulls) |
+| **Lifecycle** | Runs until task is complete, then opens a PR and terminates |
+| **State** | Ephemeral — VM is destroyed after the session. Persistent state is committed to the repo via `.github/state/` files |
+| **Cost** | Included in GitHub Copilot Enterprise / Copilot for Business plans |
+
+## How the Scaffold Gets to the Copilot Cloud Agent
+
+```
+  SCAFFOLD DELIVERY PATH
+  =======================
+
+  1. Clone this repo:
+     git clone https://github.com/cwijayasundara/copilot_harness_eng_v1.git
+
+  2. Copy .github/ into your target project:
+     cp -r copilot_harness_eng_v1/.github/ your-project/.github/
+
+  3. Push to GitHub:
+     cd your-project && git add .github/ && git commit -m "feat: add Copilot harness scaffold"
+     git push origin main
+
+  4. Enable Copilot coding agent in repo settings:
+     Settings -> Copilot -> Enable "Copilot coding agent"
+
+  5. Assign an issue to Copilot:
+     gh issue create --title "Build the auth system" --assignee "@copilot"
+
+  That's it. The agent reads .github/ on startup and follows the harness.
+
+
+  ALTERNATIVE: Use as a scaffold template
+  ----------------------------------------
+
+  From inside the target project, run the /scaffold skill to generate
+  a project-specific configuration:
+
+  1. Enable Copilot agent on your repo
+  2. Create an issue: "Initialize project with Copilot harness scaffold"
+  3. Assign to @copilot — the agent runs /scaffold interactively
+```
 
 ## Features
 
 - **Generator-Evaluator architecture** — Separate agents prevent self-evaluation bias
 - **Karpathy ratcheting** — Monotonic progress; code only gets better, never worse
-- **Agent teams** — Parallel story execution with shared task lists and messaging
-- **Session chaining** — Builds span hours across multiple context windows
+- **Custom agent teams** — Parallel story execution with phased micro-DAGs
+- **Session chaining** — Builds span hours across multiple agent sessions
 - **Three-layer evaluation** — API tests + Playwright browser interaction + Vision scoring
 - **Sprint contracts** — Generator and evaluator negotiate "done" criteria before coding
 - **TDD mandatory** — Tests first, 100% meaningful coverage target, 80% hard floor
 - **Self-healing** — 10 error categories with targeted fixes before reverting
-- **Superpowers integration** — Brainstorming, systematic debugging, TDD, and verification workflows at key pipeline stages
-- **4 execution modes** — Full ($100-300), Lean ($30-80), Solo ($5-15), Turbo ($30-50)
+- **12 quality gate hooks** — Lint, typecheck, architecture, secrets, scope enforcement
+- **File-scoped instructions** — Per-glob rules for backend Python and frontend TypeScript
+- **MCP integration** — Context7 for real-time library documentation lookup
+- **4 execution modes** — Full, Lean, Solo, Turbo (with varying gate strictness)
 
-## Installation
+## Skills (Commands)
 
-### Option 1: Per-session (CLI flag)
-
-```bash
-# Clone the harness
-git clone https://github.com/cwijayasundara/claude_harness_eng_v1.git ~/claude-harness-engine
-
-# Start Claude Code with the plugin loaded
-claude --plugin-dir ~/claude-harness-engine/.claude
-```
-
-### Option 2: Permanent (user settings)
-
-Add to `~/.claude/settings.json` (merge with existing settings):
-
-```json
-{
-  "extraKnownMarketplaces": {
-    "local-harness": {
-      "source": "directory",
-      "path": "~/claude-harness-engine/.claude"
-    }
-  },
-  "enabledPlugins": {
-    "claude-harness-engine@local-harness": true
-  }
-}
-```
-
-Then just run `claude` from any directory — the harness skills are always available.
-
-## Plugin Structure
-
-The plugin is loaded from the `.claude/` directory. Claude Code auto-discovers components by convention:
-
-```
-.claude/
-  .claude-plugin/
-    plugin.json          ← Manifest (name, version, description only)
-  skills/                ← Auto-discovered skill directories
-  agents/                ← Auto-discovered agent definitions
-  commands/              ← Auto-discovered commands
-  hooks/                 ← Hook scripts
-  settings.json          ← Permissions and hook config
-```
-
-**Important:** `plugin.json` should only contain metadata (`name`, `version`, `description`, `author`). Do NOT add explicit `skills`/`agents`/`commands` path fields — Claude Code discovers these automatically.
-
-## Quick Start
-
-```bash
-# 1. Navigate to (or create) your project directory
-mkdir my-app && cd my-app
-
-# 2. Scaffold the project (use plugin namespace)
-/claude-harness-engine:scaffold
-# Choose your stack, project type, and verification mode
-
-# 3. Run the full pipeline
-/claude-harness-engine:build
-# Phases 1-3 (BRD, spec, design) require your approval
-# Phases 4-8 run autonomously via /auto
-```
-
-> **Note:** When loaded as a plugin, all commands are namespaced: `/claude-harness-engine:<command>`. When working inside a scaffolded project (which has its own `.claude/skills/`), you can use the short form: `/scaffold`, `/build`, etc.
-
-## How It Works
-
-The `/auto` loop picks the next unfinished group from the dependency graph, negotiates a sprint contract between generator and evaluator, spawns an agent team, and runs a 6-gate ratchet. On PASS it commits and moves on. On FAIL it self-heals up to 3 times, then reverts, extracts a learned rule, and escalates.
-
-Edit `program.md` while `/auto` is running to steer mid-build.
-
-See `design.md` for full architecture reference (system diagram, agent roles, hooks, state files, sprint contract format).
-
-## Commands
-
-| Command | Purpose |
-|---------|---------|
+| Skill | Purpose |
+|-------|---------|
 | `scaffold` | Initialize project with harness |
 | `brd` | Socratic interview -> BRD |
 | `spec` | BRD -> stories + dependency graph + features.json |
 | `design` | Architecture + schemas + mockups |
 | `build` | Full 8-phase pipeline |
 | `auto` | Autonomous ratcheting loop |
-| `implement` | Code generation with agent teams |
+| `implement` | Code generation with custom agent teams |
 | `evaluate` | Run app, verify sprint contract |
 | `review` | Evaluator + security review |
 | `test` | Test plan + Playwright E2E generation |
@@ -112,46 +245,100 @@ See `design.md` for full architecture reference (system diagram, agent roles, ho
 | `improve` | Feature enhancement |
 | `lint-drift` | Entropy scanner for pattern drift |
 
-> Prefix with `/claude-harness-engine:` when using as a plugin (e.g., `/claude-harness-engine:brd`). Use `/command` shorthand when inside a scaffolded project.
+## Agents (7)
 
-## Superpowers Integration
+| Agent | Role | Model Tier |
+|-------|------|------------|
+| planner | BRD, specs, architecture, feature list | High |
+| generator | Code + tests, spawns custom agent teams | Standard |
+| evaluator | Runs app, verifies sprint contracts (GAN adversary) | High |
+| design-critic | GAN scoring (4 weighted criteria, max 10 iterations) | High |
+| security-reviewer | OWASP vulnerability scan | Standard |
+| ui-designer | React+Tailwind mockups from stories | Standard |
+| test-engineer | Test plans, fixtures, Playwright E2E | Standard |
 
-The harness integrates with the [Superpowers](https://github.com/obra/superpowers) plugin to augment key pipeline stages with structured developer workflows:
+## Quality Gate Hooks
 
-| Pipeline Stage | Superpowers Skill | What It Does |
-|---|---|---|
-| `/brd`, `/design` | `brainstorming` | Explores alternatives and hidden assumptions before committing to a direction |
-| `/implement`, `/refactor` | `writing-plans` | Produces structured plans reviewed before code is written |
-| `/implement` (teammates) | `test-driven-development` | Red-green-refactor cycle enforced in every agent prompt |
-| `/fix-issue` | `systematic-debugging` | Root cause analysis before proposing fixes |
-| `/auto` (self-healing) | `systematic-debugging` | Diagnoses failures before each fix attempt |
-| `/auto`, `/evaluate` | `verification-before-completion` | Evidence-based checks before claiming PASS |
+Three categories of hooks run automatically during agent execution:
 
-Superpowers is enabled automatically when scaffolding a project. The harness works without it, but with it agents explore before committing, debug before fixing, and verify before declaring success.
+| Category | Trigger | Hooks |
+|----------|---------|-------|
+| **Security** | `edit` | scope-directory, protect-env, detect-secrets |
+| **Quality** | `edit` | lint-on-save, typecheck, check-architecture, check-function-length, check-file-length |
+| **Pipeline** | `execute` / lifecycle | pre-commit-gate, sprint-contract-gate, task-completed, teammate-idle-check |
 
-## Plugins
+All hook scripts include input normalization adapters for Copilot's tool input format.
 
-The scaffold configures these complementary plugins in `.claude/settings.json`:
+## The GAN-Inspired Build Loop
 
-| Plugin | Purpose | Conflict? |
-|---|---|---|
-| `superpowers` | Developer workflow patterns (TDD, debugging, planning) | No |
-| `code-review` | PR review with confidence scoring | No |
-| `commit-commands` | `/commit`, `/commit-push-pr` git workflows | No |
-| `security-guidance` | Real-time XSS/eval/unsafe-code detection | No |
-| `pr-review-toolkit` | Specialized PR review agents | No |
-| `frontend-design` | Aesthetic-direction skill invoked by `ui-designer` and frontend teammates (scoring still owned by `design-critic`) | No |
-| `context7` | Up-to-date library/docs lookup MCP | No |
-| `code-simplifier` | `/simplify` skill for in-session cleanup during `/refactor` | No |
+```
+  /auto RATCHETING LOOP
+  =====================
 
-Plugins that conflict with harness functionality (`feature-dev`, `hookify`) are explicitly excluded by `/scaffold`.
+  program.md  ------>  Pick next unfinished group
+  (human steers)       from dependency graph
+                              |
+                              v
+                       +-------------+
+                       | Negotiate   |
+                       | Sprint      |     Generator proposes,
+                       | Contract    |     Evaluator accepts/rejects
+                       +-------------+
+                              |
+                              v
+                       +-------------+
+                       | Generator   |     Spawns custom agent team
+                       | implements  |     TDD mandatory, phased DAG
+                       | stories     |     Max 5 concurrent agents
+                       +-------------+
+                              |
+                              v
+                       +-------------+
+              +------->| Evaluator   |     3-layer verification:
+              |        | scores      |     API + Playwright + Vision
+              |        +-------------+
+              |               |
+              |        PASS?--+--FAIL?
+              |        |           |
+              |        v           v
+              |   Commit &    Self-heal
+              |   next group  (3 attempts)
+              |                    |
+              |              Still failing?
+              |                    |
+              |                    v
+              |              Revert + extract
+              |              learned rule +
+              +------------- escalate to human
+```
 
 ## Requirements
 
-- Claude Code v2.1.32+ (agent teams support)
-- Node.js 18+ (for hooks)
-- Docker + Docker Compose (for evaluation)
+- GitHub Copilot Enterprise or Copilot for Business (with coding agent enabled)
+- Node.js 18+ (for hook scripts in the cloud VM)
+- Docker + Docker Compose (for evaluation mode)
 - Python 3.12+ / Node.js 20+ (for generated projects)
+
+## Quick Start
+
+```bash
+# 1. Copy the scaffold into your project
+cp -r copilot_harness_eng_v1/.github/ your-project/.github/
+cd your-project
+git add .github/ && git commit -m "feat: add Copilot harness scaffold"
+git push origin main
+
+# 2. Enable Copilot coding agent in repo settings
+
+# 3. Create and assign an issue
+gh issue create \
+  --title "Build a task management API with React frontend" \
+  --body "Full-stack app with auth, CRUD, and real-time updates" \
+  --assignee "@copilot"
+
+# 4. The agent reads .github/, runs /scaffold, then /build
+#    It creates a branch, implements, tests, and opens a PR
+```
 
 ## Based On
 

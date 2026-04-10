@@ -17,7 +17,8 @@ const path = require('path');
 
 let input;
 try {
-  input = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
+  const raw = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
+  input = normalizeInput(raw);
 } catch (_) {
   process.exit(0);
 }

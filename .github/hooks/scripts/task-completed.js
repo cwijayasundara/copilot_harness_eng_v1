@@ -89,7 +89,8 @@ function checkArchitectureViolations(pyFiles) {
 
 // Parse stdin — non-fatal if missing/invalid
 try {
-  JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
+  const raw = JSON.parse(fs.readFileSync('/dev/stdin', 'utf8'));
+  normalizeInput(raw);
 } catch (_) {
   // Non-blocking: continue even if stdin is invalid
 }
